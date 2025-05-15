@@ -18,14 +18,14 @@ This project is a real-time Weather Dashboard built using Python and Streamlit, 
 
 ## Features
 
-- Fetch current weather data for any city
-- Show temperature, humidity, pressure, wind speed, visibility, sunrise/sunset, description
-- Display weather icon dynamically
-- Generate and display mock historical trends
-- Visualize trends using Seaborn line plots
-- Download data as CSV
-- Cache API responses for speed
-- Responsive and clean UI
+- Fetch current weather data for any city.
+- Show temperature, humidity, pressure, wind speed, visibility, sunrise/sunset, description.
+- Display weather icon dynamically.
+- Generate and display mock historical trends.
+- Visualize trends using Seaborn line plots.
+- Download data as CSV.
+- Cache API responses for speed.
+- Responsive and clean UI.
 
 ## Tech Stack
 
@@ -51,10 +51,13 @@ If you don’t use Git, you can also manually download the ZIP file from GitHub 
 This is to keep your project packages separate from other Python projects.
 python -m venv venv
 Then activate it:
+
 Windows:
 venv\Scripts\activate
+
 Mac/Linux:
 source venv/bin/activate
+
 You will now see something like this in your terminal:
 (venv) your-computer:weather-dashboard$
 
@@ -74,7 +77,9 @@ Sign up (free)
 Go to your profile > API keys
 Copy your API key
 Now open weatherproject.py in any code editor and replace this line:
+
 API_KEY = "your_api_key_here"
+
 With:
 API_KEY = "your_actual_api_key"
 
