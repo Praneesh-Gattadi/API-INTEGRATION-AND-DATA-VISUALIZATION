@@ -83,7 +83,11 @@ In the terminal, type:
 streamlit run weatherproject.py
 This will open the app in your browser at http://localhost:8501.
 
+# OUTPUT
 
+![Image](https://github.com/user-attachments/assets/14952446-2fc1-4e86-919d-653eeecf3dc9)
+![Image](https://github.com/user-attachments/assets/44644c2e-00a0-48ae-86d6-8ce3c2f4dbf8)
+![Image](https://github.com/user-attachments/assets/c9673bdb-e3ce-4e43-a03c-ccaf802477d8)
 
 
 
