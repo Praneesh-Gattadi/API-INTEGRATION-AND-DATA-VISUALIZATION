@@ -1,0 +1,103 @@
+import streamlit as st
+import requests
+import pandas as pd
+import datetime
+import random
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Set Seaborn theme
+sns.set_theme(style="whitegrid")
+
+# Streamlit Page Config
+st.set_page_config(page_title="Weather Dashboard", layout="centered")
+st.title("🌤️ Weather Dashboard with API Integration")
+
+# Input city
+city = st.text_input("Enter a city name:", "Delhi")
+
+# API key and endpoint
+API_KEY = "3e9130e8e9f9f40134080418c3f718ad"
+url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+
+# Cached API call for efficiency
+@st.cache_data
+def fetch_weather_data(api_url):
+    return requests.get(api_url)
+
+# Button trigger
+if st.button("Get Weather"):
+    with st.spinner("Fetching weather data..."):
+        response = fetch_weather_data(url)
+
+    if response.status_code == 200:
+        data = response.json()
+
+        # Extract weather info
+        weather = data["weather"][0]
+        main = data["main"]
+        wind = data["wind"]
+        sys = data["sys"]
+
+        weather_description = weather["description"].capitalize()
+        temperature = main["temp"]
+        humidity = main["humidity"]
+        wind_speed = wind["speed"]
+        pressure = main["pressure"]
+        visibility = data.get("visibility", "N/A")
+        sunrise = datetime.datetime.fromtimestamp(sys["sunrise"]).strftime("%H:%M:%S")
+        sunset = datetime.datetime.fromtimestamp(sys["sunset"]).strftime("%H:%M:%S")
+        icon_url = f"http://openweathermap.org/img/wn/{weather['icon']}@2x.png"
+
+        # Display weather icon and metrics
+        st.subheader(f"Current Weather in {city}")
+        st.image(icon_url, width=100)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Description", weather_description)
+            st.metric("Temperature (°C)", f"{temperature:.1f}")
+            st.metric("Humidity (%)", humidity)
+            st.metric("Visibility (m)", visibility)
+        with col2:
+            st.metric("Wind Speed (m/s)", wind_speed)
+            st.metric("Pressure (hPa)", pressure)
+            st.metric("Sunrise", sunrise)
+            st.metric("Sunset", sunset)
+
+        # Generate mock historical data
+        today = datetime.datetime.now()
+        dates = [(today - datetime.timedelta(days=i)).strftime("%Y-%m-%d") for i in range(4, -1, -1)]
+        temp_data = [round(temperature + random.uniform(-3, 3), 2) for _ in dates]
+        humidity_data = [random.randint(40, 90) for _ in dates]
+
+        df = pd.DataFrame({
+            "Date": dates,
+            "Temperature (°C)": temp_data,
+            "Humidity (%)": humidity_data
+        })
+
+        st.markdown("### 📊 Mock Historical Data (Last 5 Days)")
+        st.dataframe(df)
+
+        # Create enhanced line plots
+        fig, axs = plt.subplots(1, 2, figsize=(12, 4))
+
+        sns.lineplot(data=df, x="Date", y="Temperature (°C)", marker="o", ax=axs[0], color="red")
+        axs[0].fill_between(df["Date"], df["Temperature (°C)"], alpha=0.3, color="red")
+        axs[0].set_title("Temperature Trend")
+        axs[0].tick_params(axis='x', rotation=30)
+
+        sns.lineplot(data=df, x="Date", y="Humidity (%)", marker="o", ax=axs[1], color="blue")
+        axs[1].fill_between(df["Date"], df["Humidity (%)"], alpha=0.3, color="blue")
+        axs[1].set_title("Humidity Trend")
+        axs[1].tick_params(axis='x', rotation=30)
+
+        st.pyplot(fig)
+
+        # CSV download
+        csv = df.to_csv(index=False).encode("utf-8")
+        st.download_button("⬇️ Download Data as CSV", csv, "weather_data.csv", "text/csv")
+
+    else:
+        st.error("❌ Failed to fetch data. Please check the city name or your API key.")
