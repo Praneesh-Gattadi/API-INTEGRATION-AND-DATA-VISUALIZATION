@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import datetime
 import random
-import plotly.express as px
+import matplotlib.pyplot as plt
 import os
 from dotenv import load_dotenv
 
@@ -32,7 +32,7 @@ WEATHER_EMOJIS = {
 
 # --- Streamlit Setup ---
 st.set_page_config(
-    page_title="Weather Dashboard Pro",
+    page_title="Weather Dashboard",
     page_icon="🌦️",
     layout="centered",
     initial_sidebar_state="expanded"
@@ -59,82 +59,33 @@ def fetch_weather_data(city_name):
     
     try:
         response = requests.get(BASE_URL, params=params, timeout=10)
-        
-        # Handle specific error cases
-        if response.status_code == 404:
-            st.error(f"❌ City '{city_name}' not found. Please check the spelling and try again.")
-            st.stop()
-        elif response.status_code == 401:
-            st.error("⚠️ Invalid API key. Please check your OpenWeatherMap API key.")
-            st.stop()
-        elif response.status_code == 429:
-            st.error("🔒 API rate limit exceeded. Please wait and try again later.")
-            st.stop()
-            
-        response.raise_for_status()
-        return response.json()
-        
-    except requests.exceptions.Timeout:
-        st.error("⌛ Request timed out. Please check your internet connection and try again.")
-        st.stop()
-    except requests.exceptions.ConnectionError:
-        st.error("🌐 Network connection error. Please check your internet connection.")
-        st.stop()
-    except Exception as e:
-        st.error(f"⚠️ An unexpected error occurred: {str(e)}")
-        st.stop()
-
-@st.cache_data(ttl=CACHE_TTL)
-def fetch_forecast_data(city_name):
-    """Fetch 5-day forecast data"""
-    api_key = get_api_key()
-    params = {
-        'q': city_name,
-        'appid': api_key,
-        'units': UNITS,
-        'cnt': 40  # 5 days of data (8 measurements per day)
-    }
-    
-    try:
-        response = requests.get(FORECAST_URL, params=params, timeout=10)
         response.raise_for_status()
         return response.json()
     except Exception as e:
-        st.warning(f"Couldn't fetch forecast data: {str(e)}")
-        return None
+        st.error(f"Error fetching data: {str(e)}")
+        st.stop()
 
 def display_weather_card(data):
     """Display weather information in card format"""
     weather = data["weather"][0]
     main = data["main"]
     wind = data["wind"]
-    sys = data["sys"]
     
-    # Get appropriate emoji
     condition = weather["main"].lower()
     emoji = WEATHER_EMOJIS.get(condition, "🌫️")
     
-    st.subheader(f"{emoji} Current Weather in {data['name']}, {sys.get('country', '')}")
+    st.subheader(f"{emoji} Current Weather in {data['name']}")
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Description", weather["description"].title())
         st.metric("Temperature", f"{main['temp']:.1f} °C")
-        st.metric("Feels Like", f"{main['feels_like']:.1f} °C")
-        
-    with col2:
         st.metric("Humidity", f"{main['humidity']}%")
+    with col2:
+        st.metric("Feels Like", f"{main['feels_like']:.1f} °C")
         st.metric("Pressure", f"{main['pressure']} hPa")
-        st.metric("Visibility", f"{data.get('visibility', 'N/A')/1000:.1f} km" if data.get('visibility') else "N/A")
-        
     with col3:
         st.metric("Wind Speed", f"{wind['speed']} m/s")
-        st.metric("Wind Direction", f"{wind.get('deg', 'N/A')}°")
-        st.metric("Sunrise/Sunset", f"{format_time(sys['sunrise'])} / {format_time(sys['sunset'])}")
-
-def format_time(timestamp):
-    """Convert timestamp to readable time"""
-    return datetime.datetime.fromtimestamp(timestamp).strftime("%H:%M")
+        st.metric("Conditions", weather["description"].title())
 
 def generate_mock_history(base_temp, base_humidity, days=5):
     """Generate realistic mock historical data"""
@@ -145,145 +96,55 @@ def generate_mock_history(base_temp, base_humidity, days=5):
     
     return pd.DataFrame({
         "Date": dates,
-        "Temperature (°C)": [
-            round(base_temp + random.uniform(-3, 3), 1) 
-            for _ in dates
-        ],
-        "Humidity (%)": [
-            max(30, min(100, base_humidity + random.randint(-15, 15)))
-            for _ in dates
-        ],
-        "Precipitation (mm)": [
-            round(random.uniform(0, 10), 1)
-            for _ in dates
-        ]
+        "Temperature": [round(base_temp + random.uniform(-3, 3), 1) for _ in dates],
+        "Humidity": [max(30, min(100, base_humidity + random.randint(-15, 15))) for _ in dates],
+        "Precipitation": [round(random.uniform(0, 10), 1) for _ in dates]
     })
 
-def create_visualizations(df):
-    """Create interactive visualizations"""
-    tab1, tab2, tab3 = st.tabs(["Temperature", "Humidity", "Precipitation"])
+def create_matplotlib_visualizations(df):
+    """Create visualizations using only Matplotlib"""
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 12))
     
-    with tab1:
-        fig = px.line(
-            df, 
-            x="Date", 
-            y="Temperature (°C)",
-            title="Temperature Trend (Last 5 Days)",
-            markers=True
-        )
-        fig.update_traces(line_color='red', fill='tozeroy')
-        st.plotly_chart(fig, use_container_width=True)
+    # Temperature plot
+    ax1.plot(df["Date"], df["Temperature"], 'r-o')
+    ax1.fill_between(df["Date"], df["Temperature"], alpha=0.1, color='red')
+    ax1.set_title("Temperature Trend (°C)")
+    ax1.grid(True)
     
-    with tab2:
-        fig = px.line(
-            df, 
-            x="Date", 
-            y="Humidity (%)",
-            title="Humidity Trend (Last 5 Days)",
-            markers=True
-        )
-        fig.update_traces(line_color='blue', fill='tozeroy')
-        st.plotly_chart(fig, use_container_width=True)
-        
-    with tab3:
-        fig = px.bar(
-            df,
-            x="Date",
-            y="Precipitation (mm)",
-            title="Precipitation (Last 5 Days)",
-            color="Precipitation (mm)",
-            color_continuous_scale="blues"
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-def display_forecast(forecast_data):
-    """Display 5-day forecast"""
-    if not forecast_data:
-        return
-        
-    st.subheader("📅 5-Day Forecast")
+    # Humidity plot
+    ax2.plot(df["Date"], df["Humidity"], 'b-o')
+    ax2.fill_between(df["Date"], df["Humidity"], alpha=0.1, color='blue')
+    ax2.set_title("Humidity Trend (%)")
+    ax2.grid(True)
     
-    # Process forecast data
-    forecast_list = forecast_data['list']
-    forecast_days = {}
+    # Precipitation plot
+    ax3.bar(df["Date"], df["Precipitation"], color='skyblue')
+    ax3.set_title("Precipitation (mm)")
+    ax3.grid(True)
     
-    for item in forecast_list:
-        date = datetime.datetime.fromtimestamp(item['dt']).strftime('%Y-%m-%d')
-        if date not in forecast_days:
-            forecast_days[date] = []
-        forecast_days[date].append(item)
-    
-    # Display forecast cards
-    cols = st.columns(len(forecast_days))
-    
-    for i, (date, day_data) in enumerate(forecast_days.items()):
-        with cols[i]:
-            day_name = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%a')
-            avg_temp = sum(item['main']['temp'] for item in day_data) / len(day_data)
-            conditions = [item['weather'][0]['main'].lower() for item in day_data]
-            
-            # Get most common condition
-            condition = max(set(conditions), key=conditions.count)
-            emoji = WEATHER_EMOJIS.get(condition, "🌫️")
-            
-            st.metric(
-                label=f"{day_name} {emoji}",
-                value=f"{avg_temp:.1f}°C",
-                help=f"Conditions: {condition.title()}"
-            )
+    plt.tight_layout()
+    st.pyplot(fig)
 
 # --- Main Application ---
 def main():
-    st.title("🌦️ Advanced Weather Dashboard")
+    st.title("🌦️ Weather Dashboard")
     
-    # Sidebar with quick access cities
+    # Sidebar
     with st.sidebar:
         st.header("Quick Access")
         for city in DEFAULT_CITIES:
             if st.button(city):
                 st.session_state.city = city
                 st.rerun()
-                
-        st.divider()
-        st.markdown("### About")
-        st.markdown("This dashboard provides real-time weather data and forecasts using the OpenWeatherMap API.")
-        st.markdown("---")
-        st.markdown("Made with ❤️ using Streamlit")
     
-    # City input with session state
-    if 'city' not in st.session_state:
-        st.session_state.city = "London"
-
-    city = st.text_input(
-        "Enter city name:", 
-        value=st.session_state.city,
-        key="city_input",
-        help="Enter a valid city name (e.g., 'Paris', 'New York')"
-    ).strip()
-
-    if st.button("Get Weather", type="primary") or city != st.session_state.city:
-        if not city:
-            st.warning("⚠️ Please enter a city name")
-            st.stop()
-        
-        if not all(c.isalpha() or c.isspace() or c in "-',." for c in city):
-            st.error("❌ Invalid city name. Please use only letters, spaces, hyphens, or apostrophes.")
-            st.stop()
-        
-        with st.spinner("🔍 Searching for weather data..."):
+    # City input
+    city = st.text_input("Enter city name:", "London").strip()
+    
+    if st.button("Get Weather"):
+        with st.spinner("Fetching weather data..."):
             weather_data = fetch_weather_data(city)
-            forecast_data = fetch_forecast_data(city)
-            st.session_state.city = city  # Remember preference
-            
-            # Display current weather
             display_weather_card(weather_data)
             
-            # Display forecast if available
-            if forecast_data:
-                st.divider()
-                display_forecast(forecast_data)
-            
-            # Generate and display historical data
             st.divider()
             st.subheader("📈 Historical Trends")
             
@@ -292,15 +153,13 @@ def main():
                 base_humidity=weather_data["main"]["humidity"]
             )
             
-            create_visualizations(mock_data)
+            create_matplotlib_visualizations(mock_data)
             
             # Data export
             st.download_button(
-                label="📥 Download Data as CSV",
+                label="📥 Download Data",
                 data=mock_data.to_csv(index=False),
-                file_name=f"{city}_weather_data.csv",
-                mime="text/csv",
-                help="Download the historical weather data as a CSV file"
+                file_name=f"{city}_weather.csv"
             )
 
 if __name__ == "__main__":
