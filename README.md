@@ -87,6 +87,15 @@ Start the app using Streamlit:
 streamlit run app.py
 You should see a new tab open in your browser at http://localhost:8501, showing the weather dashboard.
 
+#OUTPUT
+
+![Image](https://github.com/user-attachments/assets/bb60e79c-873a-4226-acc7-cf7e443f6e3f)
+
+
+![Image](https://github.com/user-attachments/assets/3cf8a3e6-b61b-4cc7-a67f-d1d53a410254)
+
+
+![Image](https://github.com/user-attachments/assets/9e2e5f88-239c-4b53-bfde-96e32fd94a6c)
 
 
 
