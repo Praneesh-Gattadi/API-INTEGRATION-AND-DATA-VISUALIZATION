@@ -14,87 +14,87 @@
 
 # Weather Dashboard with Streamlit & OpenWeatherMap API
 
-This project is a real-time Weather Dashboard built using Python and Streamlit, integrated with the OpenWeatherMap API. It allows users to view live weather conditions of any city, displays a range of weather parameters, and presents interactive data visualizations of mock historical trends using Seaborn and Matplotlib.
+This project is a Weather Dashboard built using Python and Streamlit. It integrates with the OpenWeatherMap API to fetch real-time 
+weather data, and uses Matplotlib for data visualization. The dashboard displays current weather conditions along with mock historical 
+trends for temperature, humidity, and precipitation.
 
 ## Features
 
-- Fetch current weather data for any city.
-- Show temperature, humidity, pressure, wind speed, visibility, sunrise/sunset, description.
-- Display weather icon dynamically.
-- Generate and display mock historical trends.
-- Visualize trends using Seaborn line plots.
-- Download data as CSV.
-- Cache API responses for speed.
-- Responsive and clean UI.
+- Fetch real-time weather data from **OpenWeatherMap**
+- Visualize temperature, humidity, and precipitation trends using **Matplotlib**
+- Generate **mock historical data** based on current weather
+- Download weather data as a **CSV file**
+- Simple and responsive **Streamlit UI**
+- Error handling and **API key protection** using `.env` file
+- Caching with `@st.cache_data` for better performanc
 
-## Tech Stack
+## Technologies Used
 
-| Technology   | Description                              |
-|--------------|------------------------------------------|
-| Python       | Backend logic                            |
-| Streamlit    | Frontend web app framework               |
-| OpenWeatherMap API | Real-time weather data provider  |
-| Pandas       | Data manipulation                        |
-| Matplotlib   | Visualization toolkit                    |
-| Seaborn      | Enhanced statistical visualizations      |
-| Requests     | HTTP API requests                        |
+- [Python](https://www.python.org/)
+- [Streamlit](https://streamlit.io/)
+- [Matplotlib](https://matplotlib.org/)
+- [OpenWeatherMap API](https://openweathermap.org/api)
+- [pandas](https://pandas.pydata.org/)
+- [dotenv](https://pypi.org/project/python-dotenv/)
 
-## Installation & Setup
+🚀 Getting Started (Step-by-Step Guide)
+Follow these instructions to set up and run the Weather Dashboard on your local machine.
 
-**Step 1: Download the Project Code**
-Go to the folder where you want to keep the project, then open a terminal or command prompt and type:
-git clone https://github.com/your-username/weather-dashboard.git
+**Prerequisites**
+Before you begin, ensure you have the following installed:
+Python 3.8+: Download Python
+Git: Download Git (optional, for cloning)
+OpenWeatherMap API key: Free API key from openweathermap.org
+
+**1. Clone or Download the Repository**
+Using Git (recommended):
+git clone https://github.com/yourusername/weather-dashboard.git
 cd weather-dashboard
-If you don’t use Git, you can also manually download the ZIP file from GitHub and unzip it.
+Or, download the ZIP file from GitHub and extract it.
 
-**Step 2 (Optional): Create a Virtual Environment**
-This is to keep your project packages separate from other Python projects.
-python -m venv venv
-Then activate it:
+**2. Set Up a Virtual Environment (Optional but Recommended)**
+# Create a virtual environment named "env"
+python -m venv env
+# Activate the virtual environment
+# On Windows:
+env\Scripts\activate
+# On macOS/Linux:
+source env/bin/activate
 
-Windows:
-venv\Scripts\activate
+**3. Install Python Dependencies**
+Make sure you are in the project folder, create a txt file as:
+streamlit
+requests
+pandas
+matplotlib
+python-dotenv
+Save this as requirements.txt.
 
-Mac/Linux:
-source venv/bin/activate
+**4. Get Your OpenWeatherMap API Key**
+Sign up at https://openweathermap.org/api
+Go to your profile > API Keys
+Copy your default API key (or generate a new one)
 
-You will now see something like this in your terminal:
-(venv) your-computer:weather-dashboard$
+**5. Create a .env File for Your API Key**
+Create a .env file in the root folder of your project:
+OPENWEATHER_API_KEY=your_api_key_here #paste your own api key
+❗ Important: Never commit your .env file to GitHub. Add it to .gitignore.
+Example .gitignore entry:
+.env
 
-**Step 3: Install All Required Libraries**
-Run this command to install everything needed:
-pip install -r requirements.txt
-This installs:
-- streamlit
-- requests
-- pandas
-- matplotlib
-- seaborn
+**6. Run the Weather Dashboard**
+Start the app using Streamlit:
+streamlit run app.py
+You should see a new tab open in your browser at http://localhost:8501, showing the weather dashboard.
 
-**Step 4: Get a Free API Key from OpenWeatherMap**
-Visit: https://openweathermap.org/api
-Sign up (free)
-Go to your profile > API keys
-Copy your API key
-Now open weatherproject.py in any code editor and replace this line:
 
-API_KEY = "your_api_key_here"
 
-With:
-API_KEY = "your_actual_api_key"
 
-**Step 5: Run the App**
-In the terminal, type:
-streamlit run weatherproject.py
-This will open the app in your browser at http://localhost:8501.
 
-# OUTPUT
 
-![Image](https://github.com/user-attachments/assets/14952446-2fc1-4e86-919d-653eeecf3dc9)
 
-![Image](https://github.com/user-attachments/assets/44644c2e-00a0-48ae-86d6-8ce3c2f4dbf8)
 
-![Image](https://github.com/user-attachments/assets/c9673bdb-e3ce-4e43-a03c-ccaf802477d8)
+
 
 
 
