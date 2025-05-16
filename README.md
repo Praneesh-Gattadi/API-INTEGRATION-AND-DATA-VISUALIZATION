@@ -82,7 +82,7 @@ Example .gitignore entry:
 
 **6. Run the Weather Dashboard**
 Start the app using Streamlit:
-streamlit run app.py
+streamlit run app.py # replace filename with app.py
 You should see a new tab open in your browser at http://localhost:8501, showing the weather dashboard.
 
 #OUTPUT
