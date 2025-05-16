@@ -12,8 +12,10 @@ load_dotenv()  # Load environment variables from .env file
 
 # Constants
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast"
 UNITS = "metric"
 CACHE_TTL = 600  # 10 minutes in seconds
+DEFAULT_CITIES = ["London", "New York", "Tokyo", "Paris", "Sydney"]
 
 # Weather condition emojis
 WEATHER_EMOJIS = {
@@ -23,14 +25,17 @@ WEATHER_EMOJIS = {
     "thunderstorm": "⛈️",
     "snow": "❄️",
     "mist": "🌫️",
-    "drizzle": "🌦️"
+    "drizzle": "🌦️",
+    "fog": "🌁",
+    "haze": "😶‍🌫️"
 }
 
 # --- Streamlit Setup ---
 st.set_page_config(
     page_title="Weather Dashboard Pro",
     page_icon="🌦️",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="expanded"
 )
 
 # --- Helper Functions ---
@@ -38,7 +43,7 @@ def get_api_key():
     """Retrieve API key from environment variables"""
     api_key = os.getenv("OPENWEATHER_API_KEY")
     if not api_key:
-        st.error("API key not configured. Please set OWM_API_KEY in your .env file")
+        st.error("API key not configured. Please set OPENWEATHER_API_KEY in your .env file")
         st.stop()
     return api_key
 
@@ -46,10 +51,14 @@ def get_api_key():
 def fetch_weather_data(city_name):
     """Fetch weather data with comprehensive error handling"""
     api_key = get_api_key()
-    url = f"{BASE_URL}?q={city_name}&appid={api_key}&units={UNITS}"
+    params = {
+        'q': city_name,
+        'appid': api_key,
+        'units': UNITS
+    }
     
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(BASE_URL, params=params, timeout=10)
         
         # Handle specific error cases
         if response.status_code == 404:
@@ -75,6 +84,25 @@ def fetch_weather_data(city_name):
         st.error(f"⚠️ An unexpected error occurred: {str(e)}")
         st.stop()
 
+@st.cache_data(ttl=CACHE_TTL)
+def fetch_forecast_data(city_name):
+    """Fetch 5-day forecast data"""
+    api_key = get_api_key()
+    params = {
+        'q': city_name,
+        'appid': api_key,
+        'units': UNITS,
+        'cnt': 40  # 5 days of data (8 measurements per day)
+    }
+    
+    try:
+        response = requests.get(FORECAST_URL, params=params, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        st.warning(f"Couldn't fetch forecast data: {str(e)}")
+        return None
+
 def display_weather_card(data):
     """Display weather information in card format"""
     weather = data["weather"][0]
@@ -86,19 +114,22 @@ def display_weather_card(data):
     condition = weather["main"].lower()
     emoji = WEATHER_EMOJIS.get(condition, "🌫️")
     
-    st.subheader(f"{emoji} Current Weather in {data['name']}")
+    st.subheader(f"{emoji} Current Weather in {data['name']}, {sys.get('country', '')}")
     
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Description", weather["description"].title())
         st.metric("Temperature", f"{main['temp']:.1f} °C")
         st.metric("Feels Like", f"{main['feels_like']:.1f} °C")
-        st.metric("Humidity", f"{main['humidity']}%")
         
     with col2:
-        st.metric("Wind Speed", f"{wind['speed']} m/s")
+        st.metric("Humidity", f"{main['humidity']}%")
         st.metric("Pressure", f"{main['pressure']} hPa")
-        st.metric("Visibility", f"{data.get('visibility', 'N/A')} m")
+        st.metric("Visibility", f"{data.get('visibility', 'N/A')/1000:.1f} km" if data.get('visibility') else "N/A")
+        
+    with col3:
+        st.metric("Wind Speed", f"{wind['speed']} m/s")
+        st.metric("Wind Direction", f"{wind.get('deg', 'N/A')}°")
         st.metric("Sunrise/Sunset", f"{format_time(sys['sunrise'])} / {format_time(sys['sunset'])}")
 
 def format_time(timestamp):
@@ -121,12 +152,16 @@ def generate_mock_history(base_temp, base_humidity, days=5):
         "Humidity (%)": [
             max(30, min(100, base_humidity + random.randint(-15, 15)))
             for _ in dates
+        ],
+        "Precipitation (mm)": [
+            round(random.uniform(0, 10), 1)
+            for _ in dates
         ]
     })
 
 def create_visualizations(df):
     """Create interactive visualizations"""
-    tab1, tab2 = st.tabs(["Temperature", "Humidity"])
+    tab1, tab2, tab3 = st.tabs(["Temperature", "Humidity", "Precipitation"])
     
     with tab1:
         fig = px.line(
@@ -149,53 +184,124 @@ def create_visualizations(df):
         )
         fig.update_traces(line_color='blue', fill='tozeroy')
         st.plotly_chart(fig, use_container_width=True)
+        
+    with tab3:
+        fig = px.bar(
+            df,
+            x="Date",
+            y="Precipitation (mm)",
+            title="Precipitation (Last 5 Days)",
+            color="Precipitation (mm)",
+            color_continuous_scale="blues"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+def display_forecast(forecast_data):
+    """Display 5-day forecast"""
+    if not forecast_data:
+        return
+        
+    st.subheader("📅 5-Day Forecast")
+    
+    # Process forecast data
+    forecast_list = forecast_data['list']
+    forecast_days = {}
+    
+    for item in forecast_list:
+        date = datetime.datetime.fromtimestamp(item['dt']).strftime('%Y-%m-%d')
+        if date not in forecast_days:
+            forecast_days[date] = []
+        forecast_days[date].append(item)
+    
+    # Display forecast cards
+    cols = st.columns(len(forecast_days))
+    
+    for i, (date, day_data) in enumerate(forecast_days.items()):
+        with cols[i]:
+            day_name = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%a')
+            avg_temp = sum(item['main']['temp'] for item in day_data) / len(day_data)
+            conditions = [item['weather'][0]['main'].lower() for item in day_data]
+            
+            # Get most common condition
+            condition = max(set(conditions), key=conditions.count)
+            emoji = WEATHER_EMOJIS.get(condition, "🌫️")
+            
+            st.metric(
+                label=f"{day_name} {emoji}",
+                value=f"{avg_temp:.1f}°C",
+                help=f"Conditions: {condition.title()}"
+            )
 
 # --- Main Application ---
-st.title("🌦️ Advanced Weather Dashboard")
-
-# City input with session state
-if 'city' not in st.session_state:
-    st.session_state.city = "London"
-
-city = st.text_input(
-    "Enter city name:", 
-    value=st.session_state.city,
-    key="city_input",
-    help="Enter a valid city name (e.g., 'Paris', 'New York')"
-).strip()
-
-if st.button("Get Weather", type="primary"):
-    if not city:
-        st.warning("⚠️ Please enter a city name")
-        st.stop()
+def main():
+    st.title("🌦️ Advanced Weather Dashboard")
     
-    if not all(c.isalpha() or c.isspace() or c in "-'" for c in city):
-        st.error("❌ Invalid city name. Please use only letters, spaces, hyphens, or apostrophes.")
-        st.stop()
-    
-    with st.spinner("🔍 Searching for weather data..."):
-        weather_data = fetch_weather_data(city)
-        st.session_state.city = city  # Remember preference
-        
-        # Display current weather
-        display_weather_card(weather_data)
-        
-        # Generate and display historical data
+    # Sidebar with quick access cities
+    with st.sidebar:
+        st.header("Quick Access")
+        for city in DEFAULT_CITIES:
+            if st.button(city):
+                st.session_state.city = city
+                st.rerun()
+                
         st.divider()
-        st.subheader("📈 Historical Trends")
+        st.markdown("### About")
+        st.markdown("This dashboard provides real-time weather data and forecasts using the OpenWeatherMap API.")
+        st.markdown("---")
+        st.markdown("Made with ❤️ using Streamlit")
+    
+    # City input with session state
+    if 'city' not in st.session_state:
+        st.session_state.city = "London"
+
+    city = st.text_input(
+        "Enter city name:", 
+        value=st.session_state.city,
+        key="city_input",
+        help="Enter a valid city name (e.g., 'Paris', 'New York')"
+    ).strip()
+
+    if st.button("Get Weather", type="primary") or city != st.session_state.city:
+        if not city:
+            st.warning("⚠️ Please enter a city name")
+            st.stop()
         
-        mock_data = generate_mock_history(
-            base_temp=weather_data["main"]["temp"],
-            base_humidity=weather_data["main"]["humidity"]
-        )
+        if not all(c.isalpha() or c.isspace() or c in "-',." for c in city):
+            st.error("❌ Invalid city name. Please use only letters, spaces, hyphens, or apostrophes.")
+            st.stop()
         
-        create_visualizations(mock_data)
-        
-        # Data export
-        st.download_button(
-            label="📥 Download Data as CSV",
-            data=mock_data.to_csv(index=False),
-            file_name=f"{city}_weather_data.csv",
-            mime="text/csv",
-            help="Download the historical weather data as a CSV file"
-        )
+        with st.spinner("🔍 Searching for weather data..."):
+            weather_data = fetch_weather_data(city)
+            forecast_data = fetch_forecast_data(city)
+            st.session_state.city = city  # Remember preference
+            
+            # Display current weather
+            display_weather_card(weather_data)
+            
+            # Display forecast if available
+            if forecast_data:
+                st.divider()
+                display_forecast(forecast_data)
+            
+            # Generate and display historical data
+            st.divider()
+            st.subheader("📈 Historical Trends")
+            
+            mock_data = generate_mock_history(
+                base_temp=weather_data["main"]["temp"],
+                base_humidity=weather_data["main"]["humidity"]
+            )
+            
+            create_visualizations(mock_data)
+            
+            # Data export
+            st.download_button(
+                label="📥 Download Data as CSV",
+                data=mock_data.to_csv(index=False),
+                file_name=f"{city}_weather_data.csv",
+                mime="text/csv",
+                help="Download the historical weather data as a CSV file"
+            )
+
+if __name__ == "__main__":
+    main()
