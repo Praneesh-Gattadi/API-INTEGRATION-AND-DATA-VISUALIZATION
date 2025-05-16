@@ -59,11 +59,14 @@ def fetch_weather_data(city_name):
     
     try:
         response = requests.get(BASE_URL, params=params, timeout=10)
+        if response.status_code == 404:
+            st.error(f"City '{city_name}' not found. Please check the spelling and try again.")
+            return None
         response.raise_for_status()
         return response.json()
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         st.error(f"Error fetching data: {str(e)}")
-        st.stop()
+        return None
 
 def display_weather_card(data):
     """Display weather information in card format"""
@@ -129,38 +132,45 @@ def create_matplotlib_visualizations(df):
 def main():
     st.title("🌦️ Weather Dashboard")
     
-    # Sidebar
+    # Initialize session state for city
+    if "city" not in st.session_state:
+        st.session_state.city = "London"
+    
+    # Sidebar with quick access buttons
     with st.sidebar:
         st.header("Quick Access")
         for city in DEFAULT_CITIES:
             if st.button(city):
                 st.session_state.city = city
-                st.rerun()
     
-    # City input
-    city = st.text_input("Enter city name:", "London").strip()
+    # City input box synced with session state
+    city = st.text_input("Enter city name:", st.session_state.city).strip()
+    st.session_state.city = city  # keep session state updated
     
     if st.button("Get Weather"):
         with st.spinner("Fetching weather data..."):
             weather_data = fetch_weather_data(city)
-            display_weather_card(weather_data)
-            
-            st.divider()
-            st.subheader("📈 Historical Trends")
-            
-            mock_data = generate_mock_history(
-                base_temp=weather_data["main"]["temp"],
-                base_humidity=weather_data["main"]["humidity"]
-            )
-            
-            create_matplotlib_visualizations(mock_data)
-            
-            # Data export
-            st.download_button(
-                label="📥 Download Data",
-                data=mock_data.to_csv(index=False),
-                file_name=f"{city}_weather.csv"
-            )
+            if weather_data:
+                display_weather_card(weather_data)
+                
+                st.divider()
+                st.subheader("📈 Historical Trends")
+                
+                mock_data = generate_mock_history(
+                    base_temp=weather_data["main"]["temp"],
+                    base_humidity=weather_data["main"]["humidity"]
+                )
+                
+                create_matplotlib_visualizations(mock_data)
+                
+                # Data export
+                st.download_button(
+                    label="📥 Download Data",
+                    data=mock_data.to_csv(index=False),
+                    file_name=f"{city}_weather.csv"
+                )
+            else:
+                st.info("Please enter a valid city name to view the weather data.")
 
 if __name__ == "__main__":
     main()
