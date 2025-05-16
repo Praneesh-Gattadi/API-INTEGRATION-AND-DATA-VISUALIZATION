@@ -26,7 +26,7 @@ trends for temperature, humidity, and precipitation.
 - Download weather data as a **CSV file**
 - Simple and responsive **Streamlit UI**
 - Error handling and **API key protection** using `.env` file
-- Caching with `@st.cache_data` for better performanc
+- Caching with `@st.cache_data` for better performance.
 
 ## Technologies Used
 
