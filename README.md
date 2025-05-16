@@ -48,9 +48,10 @@ OpenWeatherMap API key: Free API key from openweathermap.org
 
 **1. Clone or Download the Repository**
 Using Git (recommended):
-git clone https://github.com/yourusername/weather-dashboard.git
-cd weather-dashboard
+git clone https://github.com/Praneesh-Gattadi/API-INTEGRATION-AND-DATA-VISUALIZATION.git
+cd API-INTEGRATION-AND-DATA-VISUALIZATION
 Or, download the ZIP file from GitHub and extract it.
+
 
 **2. Set Up a Virtual Environment (Optional but Recommended)**
 Create a virtual environment named "env"
