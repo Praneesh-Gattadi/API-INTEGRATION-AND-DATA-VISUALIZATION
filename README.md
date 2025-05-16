@@ -53,13 +53,11 @@ cd weather-dashboard
 Or, download the ZIP file from GitHub and extract it.
 
 **2. Set Up a Virtual Environment (Optional but Recommended)**
-# Create a virtual environment named "env"
+Create a virtual environment named "env"
 python -m venv env
-# Activate the virtual environment
-# On Windows:
-env\Scripts\activate
-# On macOS/Linux:
-source env/bin/activate
+Activate the virtual environment
+On Windows: env\Scripts\activate
+On macOS/Linux: source env/bin/activate
 
 **3. Install Python Dependencies**
 Make sure you are in the project folder, create a txt file as:
