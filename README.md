@@ -49,7 +49,7 @@ Or download ZIP from GitHub and extract it.
 
 2️⃣ Set Up a Virtual Environment (Recommended)
 Create and activate a virtual environment:
-# Create virtual environment
+
 python -m venv env
 
 # Activate it
