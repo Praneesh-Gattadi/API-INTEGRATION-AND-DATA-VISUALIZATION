@@ -102,7 +102,6 @@ streamlit run app.py
 📌 Project Structure
 
 API-INTEGRATION-AND-DATA-VISUALIZATION/
-│
 ├── app.py               
 ├── requirements.txt     
 ├── .env                 
