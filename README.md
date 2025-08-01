@@ -126,12 +126,3 @@ Do NOT share your .env file publicly.
 
 ✨ Author: Praneesh Gattadi
 Made with ❤️ using Streamlit
-
-
-
-
-
-
-
-git clone https://github.com/Praneesh-Gattadi/API-INTEGRATION-AND-DATA-VISUALIZATION.git
-cd API-INTEGRA
