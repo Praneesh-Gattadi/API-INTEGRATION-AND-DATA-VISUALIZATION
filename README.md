@@ -1,94 +1,129 @@
-# API-INTEGRATION-AND-DATA-VISUALIZATION
+# 🌦️ API-INTEGRATION-AND-DATA-VISUALIZATION
 
-# Weather Dashboard with Streamlit & OpenWeatherMap API
+## Weather Dashboard with Streamlit & OpenWeatherMap API
 
-This project is a Weather Dashboard built using Python and Streamlit. It integrates with the OpenWeatherMap API to
-fetch real-time weather data, and uses Matplotlib for data visualization. The dashboard displays current weather
-conditions along with mock historical trends for temperature, humidity, and precipitation.
+This project is a **Weather Dashboard** built using **Python** and **Streamlit**. It integrates with the **OpenWeatherMap API** to fetch real-time weather data and uses **Plotly** for data visualization. The dashboard displays **current weather conditions** along with **mock historical trends** for temperature, humidity, and precipitation.
 
-## Features
+---
+
+## ✅ Features
 
 - Fetch real-time weather data from **OpenWeatherMap**
-- Visualize temperature, humidity, and precipitation trends using **Matplotlib**
-- Generate **mock historical data** based on current weather
+- Display **current weather** with emojis for conditions
+- Show **5-day forecast** with average temperature per day
+- Visualize **temperature, humidity, and precipitation trends** using **Plotly**
+- Generate **mock historical data** for visualizations
 - Download weather data as a **CSV file**
 - Simple and responsive **Streamlit UI**
-- Error handling and **API key protection** using `.env` file
-- Caching with `@st.cache_data` for better performance.
+- **Error handling** and **API key protection** using `.env` file
+- **Caching with `@st.cache_data`** for better performance
 
-## Technologies Used
+---
+
+## 🛠 Technologies Used
 
 - [Python](https://www.python.org/)
 - [Streamlit](https://streamlit.io/)
-- [Matplotlib](https://matplotlib.org/)
+- [Plotly](https://plotly.com/)
 - [OpenWeatherMap API](https://openweathermap.org/api)
 - [pandas](https://pandas.pydata.org/)
-- [dotenv](https://pypi.org/project/python-dotenv/)
+- [python-dotenv](https://pypi.org/project/python-dotenv/)
 
-🚀 Getting Started (Step-by-Step Guide)
-Follow these instructions to set up and run the Weather Dashboard on your local machine.
+---
 
-**Prerequisites**
-Before you begin, ensure you have the following installed:
-Python 3.8+: Download Python
-Git: Download Git (optional, for cloning)
-OpenWeatherMap API key: Free API key from openweathermap.org
+## 🚀 Getting Started (Step-by-Step Guide)
 
-**1. Clone or Download the Repository**
-Using Git (recommended):
+### ✅ Prerequisites
+Ensure you have the following installed:
+- **Python 3.8+** → [Download Python](https://www.python.org/downloads/)
+- **Git** (optional, for cloning) → [Download Git](https://git-scm.com/)
+- **OpenWeatherMap API Key** → [Get it here](https://openweathermap.org/api)
+
+---
+
+### 1️⃣ Clone or Download the Repository
+Using Git:
 git clone https://github.com/Praneesh-Gattadi/API-INTEGRATION-AND-DATA-VISUALIZATION.git
 cd API-INTEGRATION-AND-DATA-VISUALIZATION
-Or, download the ZIP file from GitHub and extract it.
+Or download ZIP from GitHub and extract it.
 
-**2. Set Up a Virtual Environment (Optional but Recommended)**
-Create a virtual environment named "env"
+2️⃣ Set Up a Virtual Environment (Recommended)
+Create and activate a virtual environment:
+# Create virtual environment
 python -m venv env
-Activate the virtual environment
-On Windows: env\Scripts\activate
-On macOS/Linux: source env/bin/activate
 
-**3. Install Python Dependencies**
-Make sure you are in the project folder, create a txt file as:
+# Activate it
+# On Windows:
+env\Scripts\activate
+# On macOS/Linux:
+source env/bin/activate
+
+3️⃣ Install Dependencies
+Create a requirements.txt file with:
+
 streamlit
 requests
 pandas
-matplotlib
+plotly
 python-dotenv
-Save this as requirements.txt.
 
-**4. Get Your OpenWeatherMap API Key**
-Sign up at https://openweathermap.org/api
-Go to your profile > API Keys
-Copy your default API key (or generate a new one)
+Then install:
+pip install -r requirements.txt
 
-**5. Create a .env File for Your API Key**
-Create a .env file in the root folder of your project:
-OPENWEATHER_API_KEY=your_api_key_here #paste your own api key
-❗ Important: Never commit your .env file to GitHub. Add it to .gitignore.
-Example .gitignore entry:
+4️⃣ Get Your OpenWeatherMap API Key
+Sign up at OpenWeatherMap
+
+Go to Profile > API Keys
+
+Copy your API key
+
+
+5️⃣ Configure Environment Variables
+Create a .env file in the project root:
+OPENWEATHER_API_KEY=your_api_key_here
+important: Add .env to .gitignore:
 .env
 
-**6. Run the Weather Dashboard**
-Start the app using Streamlit:
-streamlit run app.py # replace filename with app.py
-You should see a new tab open in your browser at http://localhost:8501, showing the weather dashboard.
-                          
-                            (OR)
+6️⃣ Run the Weather Dashboard
+Start the app:
+streamlit run app.py
+You should see the dashboard at:
+http://localhost:8501
 
-First copy the path of the app.py, i.e., your saved code location.
-Then open cmd or Terminal and Enter: cd path of file #Replace your file path then press Enter.
-Then again type streamlit run app.py #Replace app with your filename then press Enter.
-You should see a new tab open in your browser at http://localhost:8501, showing the weather dashboard.
+Alternative way:
 
-#OUTPUT
+Copy your app.py path
 
-![Image](https://github.com/user-attachments/assets/bb60e79c-873a-4226-acc7-cf7e443f6e3f)
+Open CMD or Terminal:
+
+cd path_to_your_file
+streamlit run app.py
+
+📌 Project Structure
+
+API-INTEGRATION-AND-DATA-VISUALIZATION/
+│
+├── app.py                # Main Streamlit application
+├── requirements.txt      # Python dependencies
+├── .env                  # API Key (Not committed)
+└── README.md             # Documentation
+
+💡 Notes
+
+Make sure your API key is valid and active.
+
+Free OpenWeatherMap API allows 60 calls per minute.
+
+Do NOT share your .env file publicly.
+
+✨ Author: Praneesh Gattadi
+Made with ❤️ using Streamlit
 
 
-![Image](https://github.com/user-attachments/assets/3cf8a3e6-b61b-4cc7-a67f-d1d53a410254)
-
-
-![Image](https://github.com/user-attachments/assets/9e2e5f88-239c-4b53-bfde-96e32fd94a6c)
 
 
 
+
+
+git clone https://github.com/Praneesh-Gattadi/API-INTEGRATION-AND-DATA-VISUALIZATION.git
+cd API-INTEGRA
