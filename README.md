@@ -116,6 +116,14 @@ Free OpenWeatherMap API allows 60 calls per minute.
 
 Do NOT share your .env file publicly.
 
+## OUTPUT
+
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/eb740d61-e3d8-4c94-b2e1-57c75b619ee5" />
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/81f11835-043b-4b09-a70f-8fb06978ec11" />
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/1f1c1519-bad5-4361-ac06-e51a936eb352" />
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/85d1bcf2-bf09-4c34-8831-f282f8d655ac" />
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/52946539-61cc-491b-a88e-74cfe10d1990" />
+
 ✨ Author: Praneesh Gattadi
 Made with ❤️ using Streamlit
 
