@@ -1,22 +1,10 @@
 # API-INTEGRATION-AND-DATA-VISUALIZATION
 
-*COMPANY*: CODTECH IT SOLUTIONS
-
-*NAME*: Gattadi Praneesh
-
-*INTERN ID*: CT04DM1319
-
-*DOMAIN*: Python Programming
-
-*DURATION*: 4 Weeks
-
-*MENTOR*: NEELA SANTOSH
-
 # Weather Dashboard with Streamlit & OpenWeatherMap API
 
-This project is a Weather Dashboard built using Python and Streamlit. It integrates with the OpenWeatherMap API to fetch real-time 
-weather data, and uses Matplotlib for data visualization. The dashboard displays current weather conditions along with mock historical 
-trends for temperature, humidity, and precipitation.
+This project is a Weather Dashboard built using Python and Streamlit. It integrates with the OpenWeatherMap API to
+fetch real-time weather data, and uses Matplotlib for data visualization. The dashboard displays current weather
+conditions along with mock historical trends for temperature, humidity, and precipitation.
 
 ## Features
 
@@ -51,7 +39,6 @@ Using Git (recommended):
 git clone https://github.com/Praneesh-Gattadi/API-INTEGRATION-AND-DATA-VISUALIZATION.git
 cd API-INTEGRATION-AND-DATA-VISUALIZATION
 Or, download the ZIP file from GitHub and extract it.
-
 
 **2. Set Up a Virtual Environment (Optional but Recommended)**
 Create a virtual environment named "env"
@@ -102,19 +89,6 @@ You should see a new tab open in your browser at http://localhost:8501, showing 
 
 
 ![Image](https://github.com/user-attachments/assets/9e2e5f88-239c-4b53-bfde-96e32fd94a6c)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
