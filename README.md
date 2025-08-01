@@ -103,10 +103,10 @@ streamlit run app.py
 
 API-INTEGRATION-AND-DATA-VISUALIZATION/
 │
-├── app.py                # Main Streamlit application
-├── requirements.txt      # Python dependencies
-├── .env                  # API Key (Not committed)
-└── README.md             # Documentation
+├── app.py               
+├── requirements.txt     
+├── .env                 
+└── README.md            
 
 💡 Notes
 
