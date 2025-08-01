@@ -52,10 +52,10 @@ Create and activate a virtual environment:
 
 python -m venv env
 
-# Activate it
-# On Windows:
+Activate it
+On Windows:
 env\Scripts\activate
-# On macOS/Linux:
+On macOS/Linux:
 source env/bin/activate
 
 3️⃣ Install Dependencies
